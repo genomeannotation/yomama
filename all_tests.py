@@ -2,9 +2,11 @@
 
 # import all the lovely files
 import unittest
+import test.sequence_tests
 
 # get suites from test modules
 suites = [
+test.sequence_tests.suite(),\
 ]
 
 # collect suites in a TestSuite object
