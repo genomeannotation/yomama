@@ -4,11 +4,13 @@
 import unittest
 import test.sequence_tests
 import test.oligos_tests
+import test.fastq_tests
 
 # get suites from test modules
 suites = [
 test.sequence_tests.suite(),\
 test.oligos_tests.suite(),\
+test.fastq_tests.suite(),\
 ]
 
 # collect suites in a TestSuite object
