@@ -12,6 +12,7 @@ def read_fastq(io_buffer):
                 # Yield the previous Sequence
                 yield Sequence(header, bases, scores)
             header = line[1:].strip()  # Get the next header
+            bases = ""
         elif line[0] == '+':
             scores_are_next = True
         else:

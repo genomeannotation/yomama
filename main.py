@@ -24,12 +24,14 @@ def main():
     counts = {}
 
     for seq in seqs:
+        print("Before--\n" + str(seq))
         # Get sample name for each sequence
         add_sample_name_from_header(seq)
 
         # Deprimer each sequence
         sort_seq(oligos, seq)
 
+        print("After--\n" + str(seq))
         # Build dictionary of counts of unique reads for each locus/sample
         update_counts_dict(counts, seq)
 
