@@ -3,6 +3,7 @@
 import sys
 from src.fastq import read_fastq
 from src.sequence import add_sample_name_from_header
+from src.oligos import read_oligos, sort_seq
 
 def main():
     # Read fastq file
