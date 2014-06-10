@@ -2,7 +2,7 @@
 
 import sys
 from src.fastq import read_fastq
-from src.sequence import get_sample_name
+from src.sequence import add_sample_name_from_header
 
 def main():
     # Read fastq file
