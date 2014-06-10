@@ -7,7 +7,7 @@ def read_fastq(io_buffer):
     bases = ''
     scores = []
     for line in io_buffer:
-        if line[0] == '@':
+        if line[0] == '@' and not scores_are_next:
             if len(header) > 0:
                 # Yield the previous Sequence
                 yield Sequence(header, bases, scores)

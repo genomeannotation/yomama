@@ -33,9 +33,10 @@ def main():
         # Build dictionary of counts of unique reads for each locus/sample
         update_counts_dict(counts, seq)
 
+    fastq.close()
     # Write contents of dictionary to stdout
     # TODO
-    print(counts)
+    print("counts is " + str(len(counts)))
 
 def update_counts_dict(counts_dict, seq):
     # dict maps locus to a locus_dict, which maps sample to a seq dict,
