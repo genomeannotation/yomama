@@ -13,7 +13,7 @@ def main():
         exit()
 
     # Create dictionary to hold counts
-    counts_dict = {}
+    counts = {}
 
     for seq in seqs:
         # Get sample name for each sequence
@@ -23,7 +23,28 @@ def main():
         # TODO 
 
         # Build dictionary of counts of unique reads for each locus/sample
-        update_counts_dict(counts_dict, seq)
+        update_counts_dict(counts, seq)
+
+    # Write contents of dictionary to stdout
+    # TODO
+    print(counts)
+
+def update_counts_dict(counts_dict, seq):
+    # dict maps locus to a locus_dict, which maps sample to a seq dict,
+    # which maps seqs to counts. omg wtf.
+    if seq.locus not in counts_dict:
+        counts_dict[seq.locus] = {}
+    update_locus_dict(counts_dict[seq.locus], seq)
+
+def update_locus_dict(locus_dict, seq):
+    if seq.sample not in locus_dict:
+        locus_dict[seq.sample] = {}
+    update_sample_dict(locus_dict[seq.sample], seq)
+
+def update_sample_dict(sample_dict, seq):
+    if seq.bases not in sample_dict:
+        sample_dict[seq.bases] = 0
+    sample_dict[seq.bases] += 1
 
 
 ###################
