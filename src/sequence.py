@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import sys
+
 class Sequence:
 
     def __init__(self, header="", bases="", scores=None, locus="", sample=""):

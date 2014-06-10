@@ -7,8 +7,8 @@ from src.oligos import read_oligos, sort_seq
 
 def main():
     # Read fastq file
-    with open("foo.fastq", "r") as fastq:
-        seqs = read_fastq(fastq)
+    fastq = open("foo.fastq", "r")
+    seqs = read_fastq(fastq)
     if not seqs:
         sys.stderr.write("Oh snap, failed to read fastq.\n")
         exit()
