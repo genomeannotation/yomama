@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import unittest
+from mock import Mock
 import io
 from src.oligos import *
 
@@ -14,6 +15,15 @@ class TestOligos(unittest.TestCase):
     def test_read_oligos(self):
         oligos = read_oligos(self.ipr_file)
         self.assertEquals(2, len(oligos))
+
+    def test_sort_seq_positive(self):
+        oligos = {"foo":PrimerPair("GATACA", "TGTATC"), "dog":PrimerPair("ATGC", "ATGC")}
+        seq = Mock()
+        seq.bases = "GATACAGGGGGTGTATC"
+        seq.locus = ""
+        sort_seq(oligos, seq)
+        self.assertEqual(seq.bases, "GGGGG")
+        self.assertEquals(seq.locus, "foo")
 
 
 ##########################

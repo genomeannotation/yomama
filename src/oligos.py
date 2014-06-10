@@ -3,7 +3,7 @@ from collections import namedtuple
 PrimerPair = namedtuple("Oligo", "left right")
 
 def read_oligos(io_buffer):
-    oligos = {} # Map of sample names to primer pairs
+    oligos = {} # Map of locus names to primer pairs
     for line in io_buffer:
         if not line:
             continue
@@ -12,3 +12,11 @@ def read_oligos(io_buffer):
             continue
         oligos[columns[3]] = PrimerPair(columns[1], columns[2])
     return oligos
+
+def sort_seq(oligos, seq):
+    for locus, primer_pair in oligos.items():
+        if primer_pair.left == seq.bases[:len(primer_pair.left)] and\
+           primer_pair.right == seq.bases[-len(primer_pair.right):]:
+            seq.locus = locus # Sort
+            seq.bases = seq.bases[len(primer_pair.left):-len(primer_pair.right)] # Trim
+            return
