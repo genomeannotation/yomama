@@ -9,15 +9,15 @@ class TestOligos(unittest.TestCase):
 
     def setUp(self):
         self.ipr_file = io.StringIO(\
-        "primer\tGATACA\tTGTATC\tsample1\n"\
-        "primer\tGATACA\tTGTATC\tsample2\n")
+        "primer\tGATACA\tGATACA\tsample1\n"\
+        "primer\tGATACA\tGATACA\tsample2\n")
 
     def test_read_oligos(self):
         oligos = read_oligos(self.ipr_file)
         self.assertEquals(2, len(oligos))
 
     def test_sort_seq_positive(self):
-        oligos = {"foo":PrimerPair("GATACA", "TGTATC"), "dog":PrimerPair("ATGC", "ATGC")}
+        oligos = {"foo":PrimerPair("GATACA", "GATACA"), "dog":PrimerPair("ATGC", "ATGC")}
         seq = Mock()
         seq.bases = "GATACAGGGGGTGTATC"
         seq.locus = ""

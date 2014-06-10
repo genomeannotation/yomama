@@ -1,4 +1,5 @@
 from collections import namedtuple
+from src.sequtil import reverse_complement
 
 PrimerPair = namedtuple("Oligo", "left right")
 
@@ -16,7 +17,7 @@ def read_oligos(io_buffer):
 def sort_seq(oligos, seq):
     for locus, primer_pair in oligos.items():
         if primer_pair.left == seq.bases[:len(primer_pair.left)] and\
-           primer_pair.right == seq.bases[-len(primer_pair.right):]:
+           primer_pair.right == reverse_complement(seq.bases[-len(primer_pair.right):]):
             seq.locus = locus # Sort
             seq.bases = seq.bases[len(primer_pair.left):-len(primer_pair.right)] # Trim
             return
