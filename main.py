@@ -24,21 +24,22 @@ def main():
     counts = {}
 
     for seq in seqs:
-        print("Before--\n" + str(seq))
         # Get sample name for each sequence
         add_sample_name_from_header(seq)
 
         # Deprimer each sequence
         sort_seq(oligos, seq)
 
-        print("After--\n" + str(seq))
+        # Skip if deprimering didn't work
+        if not seq.locus:
+            continue
+
         # Build dictionary of counts of unique reads for each locus/sample
         update_counts_dict(counts, seq)
 
     fastq.close()
     # Write contents of dictionary to stdout
-    # TODO
-    print("counts is " + str(len(counts)))
+    print_summary(counts)
 
 def update_counts_dict(counts_dict, seq):
     # dict maps locus to a locus_dict, which maps sample to a seq dict,
@@ -56,6 +57,12 @@ def update_sample_dict(sample_dict, seq):
     if seq.bases not in sample_dict:
         sample_dict[seq.bases] = 0
     sample_dict[seq.bases] += 1
+
+def print_summary(counts_dict):
+    for locus, locus_dict in counts_dict.items():
+        for sample, sample_dict in locus_dict.items():
+            for seq, count in sample_dict.items():
+                print(locus+"\t"+sample+"\t"+seq+"\t"+str(count))
 
 
 ###################
