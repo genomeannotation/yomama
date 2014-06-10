@@ -23,6 +23,16 @@ class TestSequence(unittest.TestCase):
         add_sample_name_from_header(test_seq)
         self.assertTrue(test_seq.sample)
 
+    def test_to_string(self):
+        self.seq1.locus = "foo_locus"
+        self.seq1.sample = "foo_sample"
+        expected = "Header: seq1\n"
+        expected += "Bases: GATTACA\n"
+        expected += "Locus: foo_locus\n"
+        expected += "Sample: foo_sample\n"
+        actual = str(self.seq1)
+        self.assertEqual(expected, actual)
+
 ##########################
 def suite():
     suite = unittest.TestSuite()

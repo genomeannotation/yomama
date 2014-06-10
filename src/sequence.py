@@ -13,6 +13,13 @@ class Sequence:
         self.locus = locus
         self.sample = sample
 
+    def __str__(self):
+        result = "Header: " + self.header + "\n"
+        result += "Bases: " + self.bases + "\n"
+        result += "Locus: " + self.locus + "\n"
+        result += "Sample: " + self.sample + "\n"
+        return result
+
     def to_fasta(self):
         result = '>' + self.header + '\n'
         result += self.bases + '\n'
