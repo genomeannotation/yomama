@@ -12,6 +12,13 @@ def main():
         sys.stderr.write("Oh snap, failed to read fastq.\n")
         exit()
 
+    # Read oligos file
+    with open("foo.oligos", "r") as oligos:
+        oligos = read_oligos(oligos)
+    if not oligos:
+        sys.stderr.write("Aww naw, couldn't read oligos.\n")
+        exit()
+
     # Create dictionary to hold counts
     counts = {}
 
@@ -20,7 +27,7 @@ def main():
         add_sample_name_from_header(seq)
 
         # Deprimer each sequence
-        # TODO 
+        sort_seq(oligos, seq)
 
         # Build dictionary of counts of unique reads for each locus/sample
         update_counts_dict(counts, seq)
