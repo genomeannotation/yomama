@@ -53,10 +53,10 @@ def main():
 
     fastq.close()
     # Write contents of dictionary to stdout
-    #print_summary(counts)
+    print_summary(counts)
     samples = sorted(samples)
     loci = sorted(loci)
-    print_read_counts(counts, loci, samples)
+    #print_read_counts(counts, loci, samples)
 
 def update_counts_dict(counts_dict, seq):
     # dict maps locus to a locus_dict, which maps sample to a seq dict,
@@ -84,9 +84,9 @@ def print_summary(counts_dict):
 def print_read_counts(counts_dict, loci, samples):
     # Print header
     sys.stdout.write("\t")
-    for sample in samples[:-1]:
+    for sample in samples:
         sys.stdout.write(sample + "\t")
-    sys.stdout.write(samples[-1] + "\n")
+    sys.stdout.write("total\n")
 
     # For each locus, write read counts for each sample
     for locus in loci:
@@ -97,28 +97,27 @@ def print_read_counts(counts_dict, loci, samples):
 
 def write_zero_row(locus, samples):
     sys.stdout.write(locus + "\t")
-    for sample in samples[:-1]:
+    for sample in samples:
         sys.stdout.write("0\t")
     sys.stdout.write("0\n")
 
 def write_counts_per_sample(locus, locus_dict, samples):
     sys.stdout.write(locus + "\t")
-    for sample in samples[:-1]:
+    total = 0
+    for sample in samples:
         if sample not in locus_dict:
             sys.stdout.write("0\t")
         else:
-            sys.stdout.write(total_reads(locus_dict[sample]) + "\t")
-    # Take care of last sample and newline
-    if samples[-1] not in locus_dict:
-        sys.stdout.write("0\n")
-    else:
-        sys.stdout.write(total_reads(locus_dict[samples[-1]]) + "\n")
+            read_count = total_reads(locus_dict[sample])
+            total += read_count
+            sys.stdout.write(str(read_count) + "\t")
+    sys.stdout.write(str(total) + "\n")
 
 def total_reads(sample_dict):
     total = 0
     for count in sample_dict.values():
         total += count
-    return str(count)
+    return total
 
 
 ###################
