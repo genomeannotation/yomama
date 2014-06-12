@@ -6,13 +6,15 @@ import test.sequence_tests
 import test.oligos_tests
 import test.fastq_tests
 import test.sequtil_tests
+import test.consensus_tests
 
 # get suites from test modules
 suites = [
-test.sequence_tests.suite(),\
-test.oligos_tests.suite(),\
-test.fastq_tests.suite(),\
-test.sequtil_tests.suite(),\
+test.sequence_tests.suite(),
+test.oligos_tests.suite(),
+test.fastq_tests.suite(),
+test.sequtil_tests.suite(),
+test.consensus_tests.suite(),
 ]
 
 # collect suites in a TestSuite object

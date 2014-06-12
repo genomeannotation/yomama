@@ -52,11 +52,10 @@ def main():
         update_counts_dict(counts, seq)
 
     fastq.close()
-    # Write contents of dictionary to stdout
-    print_summary(counts)
+    #print_summary(counts)
     samples = sorted(samples)
     loci = sorted(loci)
-    #print_read_counts(counts, loci, samples)
+    print_read_counts(counts, loci, samples)
 
 def update_counts_dict(counts_dict, seq):
     # dict maps locus to a locus_dict, which maps sample to a seq dict,
