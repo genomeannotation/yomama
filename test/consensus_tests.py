@@ -14,6 +14,16 @@ class TestConsensus(unittest.TestCase):
         consensus_seqs = call_consensus(self.seqs_dict)
         self.assertTrue("ACGTACGT" in consensus_seqs)
         self.assertTrue("GATTACA" in consensus_seqs)
+        
+    def test_call_consensus_with_min_count(self):
+        consensus_seqs = call_consensus(self.seqs_dict, min_count=2)
+        self.assertFalse("ACGTACGT" in consensus_seqs)
+        self.assertTrue("GATTACA" in consensus_seqs)
+
+    def test_call_consensus_with_min_percent(self):
+        consensus_seqs = call_consensus(self.seqs_dict, min_percent=0.5)
+        self.assertFalse("ACGTACGT" in consensus_seqs)
+        self.assertTrue("GATTACA" in consensus_seqs)
 
 
 ##########################

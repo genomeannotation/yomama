@@ -4,6 +4,7 @@ import sys
 from src.fastq import read_fastq
 from src.sequence import add_sample_name_from_header
 from src.oligos import read_oligos, sort_seq
+from src.consensus import call_consensus
 
 def main():
     # Read fastq file
@@ -55,7 +56,35 @@ def main():
     #print_summary(counts)
     samples = sorted(samples)
     loci = sorted(loci)
-    print_read_counts(counts, loci, samples)
+    #print_read_counts(counts, loci, samples)
+    call_consensus_sequences(counts, 30, 0.25)
+
+def call_consensus_sequences(counts_dict, min_count, min_percentage):
+    twofers = open("two_consensus_seqs.fasta", "w")
+    onefers = open("one_consensus_seq.fasta", "w")
+    for locus, locus_dict in counts_dict.items():
+        for sample, sample_dict in locus_dict.items():
+            consensus = call_consensus(sample_dict,
+                            min_count, min_percentage)
+            if consensus:
+                seqs = consensus.keys()
+                if len(seqs) == 1:
+                    seq = seqs[0]
+                    percent = str(consensus[seq])
+                    # write it twice
+                    onefers.write(consensus_fasta(locus, sample, seq, percent))
+                    onefers.write(consensus_fasta(locus, sample, seq, percent))
+                elif len(seqs) == 2:
+                    for seq in seqs:
+                        percent = str(consensus[seq])
+                        twofers.write(consensus_fasta(locus, sample, seq, percent))
+    onefers.close()
+    twofers.close()
+
+def consensus_fasta(locus, sample, seq, percent):
+    result = ">" + locus + "_" + sample + "_" + percent + "\n"
+    result += seq + "\n"
+    return result
 
 def update_counts_dict(counts_dict, seq):
     # dict maps locus to a locus_dict, which maps sample to a seq dict,
