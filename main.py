@@ -25,8 +25,12 @@ def main():
     counts = {}
     samples = []
     loci = []
+    total_reads = 0
+    deprimered_reads = 0
 
     for seq in seqs:
+        total_reads += 1
+
         # Get sample name for each sequence
         add_sample_name_from_header(seq)
         
@@ -45,6 +49,8 @@ def main():
         if not seq.locus:
             continue
 
+        deprimered_reads += 1
+
         # Add locus name to list
         if seq.locus not in loci:
             loci.append(seq.locus)
@@ -57,29 +63,51 @@ def main():
     samples = sorted(samples)
     loci = sorted(loci)
     #print_read_counts(counts, loci, samples)
-    call_consensus_sequences(counts, 30, 0.25)
+    sys.stdout.write("Total reads: " + str(total_reads) + "\n")
+    sys.stdout.write("Deprimered reads: " + str(deprimered_reads) + "\n")
+    call_consensus_sequences(counts, 30, 0.25, dry_run=True)
 
-def call_consensus_sequences(counts_dict, min_count, min_percentage):
-    twofers = open("two_consensus_seqs.fasta", "w")
-    onefers = open("one_consensus_seq.fasta", "w")
+def call_consensus_sequences(counts_dict, min_count, min_percentage, dry_run=False):
+    # dry_run generates a summary of read counts at each locus/sample;
+    # non-dry_run writes fasta files of consensus calls
+    if dry_run:
+        sys.stdout.write("locus\tsample\ttotal_reads\ttop_3_seq_counts\n")
+    else:
+        twofers = open("two_consensus_seqs.fasta", "w")
+        onefers = open("one_consensus_seq.fasta", "w")
     for locus, locus_dict in counts_dict.items():
         for sample, sample_dict in locus_dict.items():
-            consensus = call_consensus(sample_dict,
-                            min_count, min_percentage)
-            if consensus:
-                seqs = consensus.keys()
-                if len(seqs) == 1:
-                    seq = seqs[0]
-                    percent = str(consensus[seq])
-                    # write it twice
-                    onefers.write(consensus_fasta(locus, sample, seq, percent))
-                    onefers.write(consensus_fasta(locus, sample, seq, percent))
-                elif len(seqs) == 2:
-                    for seq in seqs:
+            if dry_run:
+                sys.stdout.write(locus + "\t" + sample + "\t")
+                seq_counts = sample_dict.values()
+                if len(seq_counts) < 3:
+                    sys.stdout.write("(fewer than 3 uniq seqs; counts are: "+
+                                    str(seq_counts) + ")\n")
+                    continue
+                total_reads = sum(seq_counts)
+                top_3_counts = sorted(seq_counts)[::-1][:3]
+                sys.stdout.write(str(total_reads) + "\t")
+                for count in top_3_counts[:-1]:
+                    sys.stdout.write(str(count) + ",")
+                sys.stdout.write(str(top_3_counts[-1]) + "\n")
+            else:
+                consensus = call_consensus(sample_dict,
+                                min_count, min_percentage)
+                if consensus:
+                    seqs = consensus.keys()
+                    if len(seqs) == 1:
+                        seq = seqs[0]
                         percent = str(consensus[seq])
-                        twofers.write(consensus_fasta(locus, sample, seq, percent))
-    onefers.close()
-    twofers.close()
+                        # write it twice
+                        onefers.write(consensus_fasta(locus, sample, seq, percent))
+                        onefers.write(consensus_fasta(locus, sample, seq, percent))
+                    elif len(seqs) == 2:
+                        for seq in seqs:
+                            percent = str(consensus[seq])
+                            twofers.write(consensus_fasta(locus, sample, seq, percent))
+    if not dry_run:
+        onefers.close()
+        twofers.close()
 
 def consensus_fasta(locus, sample, seq, percent):
     result = ">" + locus + "_" + sample + "_" + percent + "\n"
