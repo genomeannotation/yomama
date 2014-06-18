@@ -4,7 +4,7 @@ import sys
 from src.fastq import read_fastq
 from src.sequence import add_sample_name_from_header
 from src.oligos import read_oligos, sort_seq
-from src.consensus import call_consensus
+from src.consensus import call_consensus, yohan_consensus
 
 def main():
     # Read fastq file
@@ -63,9 +63,10 @@ def main():
     samples = sorted(samples)
     loci = sorted(loci)
     #print_read_counts(counts, loci, samples)
-    sys.stdout.write("Total reads: " + str(total_reads) + "\n")
-    sys.stdout.write("Deprimered reads: " + str(deprimered_reads) + "\n")
-    call_consensus_sequences(counts, 30, 0.25, dry_run=True)
+    #sys.stdout.write("Total reads: " + str(total_reads) + "\n")
+    #sys.stdout.write("Deprimered reads: " + str(deprimered_reads) + "\n")
+    #call_consensus_sequences(counts, 30, 0.25, dry_run=True)
+    call_consensus_for_yohan(counts)
 
 def call_consensus_sequences(counts_dict, min_count, min_percentage, dry_run=False):
     # dry_run generates a summary of read counts at each locus/sample;
@@ -109,8 +110,31 @@ def call_consensus_sequences(counts_dict, min_count, min_percentage, dry_run=Fal
         onefers.close()
         twofers.close()
 
-def consensus_fasta(locus, sample, seq, percent):
-    result = ">" + locus + "_" + sample + "_" + percent + "\n"
+
+def call_consensus_for_yohan(counts_dict):
+    twofers = open("two_consensus_seqs.fasta", "w")
+    onefers = open("one_consensus_seq.fasta", "w")
+    for locus, locus_dict in counts_dict.items():
+        for sample, sample_dict in locus_dict.items():
+            # consensus is a list of tuples of (seq, count)
+            consensus = yohan_consensus(sample_dict)
+            if consensus:
+                if len(consensus) == 1:
+                    seq = consensus[0][0]
+                    count = consensus[0][1]
+                    # write it twice
+                    onefers.write(consensus_fasta(locus, sample, seq, count))
+                    onefers.write(consensus_fasta(locus, sample, seq, count))
+                elif len(consensus) == 2:
+                    for entry in consensus:
+                        seq = entry[0]
+                        count = entry[1]
+                        twofers.write(consensus_fasta(locus, sample, seq, count))
+    onefers.close()
+    twofers.close()
+
+def consensus_fasta(locus, sample, seq, count):
+    result = ">" + locus + "_" + sample + "_" + str(count) + "\n"
     result += seq + "\n"
     return result
 
