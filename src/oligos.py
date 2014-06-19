@@ -48,7 +48,7 @@ def sort_seq(oligos, seq, max_mismatch = 0):
             seq.bases = seq.bases[len(primer_pair.left):-len(primer_pair.right)] # Trim
             return
 
-def deoligo_seqs(seqs, oligos):
+def deoligo_seqs(seqs, oligos, pdiffs):
     counts = {}
     for seq in seqs:
         # Get sample name for each sequence
@@ -61,7 +61,7 @@ def deoligo_seqs(seqs, oligos):
             continue
 
         # Deprimer each sequence
-        sort_seq(oligos, seq)
+        sort_seq(oligos, seq, max_mismatch=pdiffs)
 
         # Skip if deprimering didn't work
         if not seq.locus:
