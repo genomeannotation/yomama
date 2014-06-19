@@ -6,13 +6,6 @@ from src.oligos import read_oligos, deoligo_seqs
 from src.consensus import call_consensus_for_yohan # ;-)
 
 def main():
-    # Read fastq file
-    fastq = open("foo.fastq", "r")
-    seqs = read_fastq(fastq)
-    if not seqs:
-        sys.stderr.write("Oh snap, failed to read fastq.\n")
-        exit()
-
     # Read oligos file
     with open("foo.oligos", "r") as oligos:
         oligos = read_oligos(oligos)
@@ -20,8 +13,16 @@ def main():
         sys.stderr.write("Aww naw, couldn't read oligos.\n")
         exit()
 
-    # Create dictionary to hold counts
-    counts = deoligo_seqs(seqs, oligos)
+    # Read fastq file and deoligo seqs
+    with open("foo.fastq", "r") as fastq:
+        seqs = read_fastq(fastq)
+        if not seqs:
+            sys.stderr.write("Oh snap, failed to read fastq.\n")
+            exit()
+        counts = deoligo_seqs(seqs, oligos)
+
+    if not counts:
+        sys.stderr.write("Failed to deoligo seqs, I'm out.\n")
 
     # Now call consensus
     with open("homozygous.fasta", "w") as ones,\
