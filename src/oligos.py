@@ -16,10 +16,34 @@ def read_oligos(io_buffer):
         oligos[columns[3]] = PrimerPair(columns[1], columns[2])
     return oligos
 
-def sort_seq(oligos, seq):
+def sort_seq(oligos, seq, max_mismatch = 0):
     for locus, primer_pair in oligos.items():
-        if primer_pair.left == seq.bases[:len(primer_pair.left)] and\
-           primer_pair.right == reverse_complement(seq.bases[-len(primer_pair.right):]):
+        seq_left = seq.bases[:len(primer_pair.left)] 
+        seq_right = reverse_complement(seq.bases[-len(primer_pair.right):])
+        if primer_pair.left == seq_left and\
+           primer_pair.right == seq_right:
+            seq.locus = locus # Sort
+            seq.bases = seq.bases[len(primer_pair.left):-len(primer_pair.right)] # Trim
+            return
+        else: # Doesn't match perfectly, check if there's few enough mismatches
+            left_mismatch = 0
+            for i in range(0, len(primer_pair.left)):
+                if primer_pair.left[i] != seq_left[i]:
+                    left_mismatch += 1
+                    if left_mismatch > max_mismatch:
+                        break
+            if left_mismatch > max_mismatch:
+                continue
+            right_mismatch = 0
+            for i in range(0, len(primer_pair.right)):
+                if primer_pair.right[i] != seq_right[i]:
+                    right_mismatch += 1
+                    if right_mismatch > max_mismatch:
+                        break
+            if right_mismatch > max_mismatch:
+                continue
+
+            # It's good enough, take it
             seq.locus = locus # Sort
             seq.bases = seq.bases[len(primer_pair.left):-len(primer_pair.right)] # Trim
             return

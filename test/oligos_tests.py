@@ -16,12 +16,30 @@ class TestOligos(unittest.TestCase):
         oligos = read_oligos(self.ipr_file)
         self.assertEquals(2, len(oligos))
 
-    def test_sort_seq_positive(self):
+    def test_sort_seq_positive_match(self):
         oligos = {"foo":PrimerPair("GATACA", "GATACA"), "dog":PrimerPair("ATGC", "ATGC")}
         seq = Mock()
         seq.bases = "GATACAGGGGGTGTATC"
         seq.locus = ""
         sort_seq(oligos, seq)
+        self.assertEqual(seq.bases, "GGGGG")
+        self.assertEquals(seq.locus, "foo")
+
+    def test_sort_seq_positive_no_match(self):
+        oligos = {"foo":PrimerPair("GATACA", "GATACA"), "dog":PrimerPair("ATGC", "ATGC")}
+        seq = Mock()
+        seq.bases = "GAGACAGGGGGTGTATC"
+        seq.locus = ""
+        sort_seq(oligos, seq)
+        self.assertEqual(seq.bases, "GAGACAGGGGGTGTATC")
+        self.assertEquals(seq.locus, "")
+
+    def test_sort_seq_positive_match_tolerant(self):
+        oligos = {"foo":PrimerPair("GATACA", "GATACA"), "dog":PrimerPair("ATGC", "ATGC")}
+        seq = Mock()
+        seq.bases = "GAGACAGGGGGTGTATA"
+        seq.locus = ""
+        sort_seq(oligos, seq, 1)
         self.assertEqual(seq.bases, "GGGGG")
         self.assertEquals(seq.locus, "foo")
 
