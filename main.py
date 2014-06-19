@@ -24,7 +24,9 @@ def main():
     counts = deoligo_seqs(seqs, oligos)
 
     # Now call consensus
-    call_consensus_for_yohan(counts)
+    with open("homozygous.fasta", "w") as ones,\
+         open("heterozygous.fasta", "w") as twos:
+        call_consensus_for_yohan(counts, ones, twos)
 
 
 
