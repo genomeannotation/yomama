@@ -81,7 +81,7 @@ def call_consensus(seqs_dict, min_count=0, min_percent=0.0):
 def yohan_consensus(seqs_dict):
     MIN_COUNT_HIGH = 50
     MIN_COUNT_LOW = 10
-    sorted_seqs = sorted(seqs_dict.iteritems(), key=operator.itemgetter(1), reverse=True)
+    sorted_seqs = sorted(seqs_dict.items(), key=operator.itemgetter(1), reverse=True)
     if not sorted_seqs:
         return []
     elif len(sorted_seqs) == 1:
