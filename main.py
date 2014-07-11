@@ -32,7 +32,7 @@ def main(args):
             if not seqs:
                 sys.stderr.write("Oh snap, failed to read fastq.\n")
                 exit()
-            sorted_reads = deoligo_seqs(seqs, oligos, PRIMER_DIFFS)
+            sorted_reads = deoligo_seqs(seqs, oligos, BARCODE_DIFFS, LINKER_DIFFS, PRIMER_DIFFS)
 
         if not sorted_reads:
             sys.stderr.write("Failed to deoligo seqs, I'm out.\n")
