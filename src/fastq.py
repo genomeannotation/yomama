@@ -1,4 +1,5 @@
 from src.sequence import Sequence
+from src.sequtil import score_as_int
 
 def read_fastq(io_buffer):
     """Returns a generator of Sequence objects"""
@@ -26,5 +27,4 @@ def read_fastq(io_buffer):
 
 def translate_scores(scorestring):
     """Translates a string of phred scores to a list of integers"""
-    # TODO
-    return []
+    return [score_as_int(score) for score in scorestring]

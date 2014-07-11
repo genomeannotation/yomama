@@ -3,7 +3,7 @@
 import unittest
 import io
 from mock import Mock
-from src.fastq import read_fastq
+from src.fastq import read_fastq, translate_scores
 
 class TestFastq(unittest.TestCase):
 
@@ -18,6 +18,10 @@ class TestFastq(unittest.TestCase):
         result += "+\n"
         result += "CCCCCGGGGGGGGGGGGGGGGGGGDFFGGGGFGGGGGGGGGGDGA8EEFEEFGF8CFCEFDFGDGGGGGGFFGGGGGGFGGFFGGGGGGFFGGFFFGGGGGFGFGGGGG?FEFFFGFFFGGGGGGGGGGFFGFGGGGFFFCGFGGGEFFGGGGFEDFEGGGGFGEAFGGGGGFC>EEAGGGGGGGFFCFFGFGGGGGFGGGGFFGGFFGFAGGGGGGFGFFGGGGGGGFGFGGGGGGGGGGGGGGGGFGGGFFFEGGCGGGGGGGGGGGFGGGGGGGGGGGGGGGGGGGF?GGGGFGGGGGGGGGGGGCCCCC"
         return result
+
+    def test_translate_scores(self):
+        score_string = "ABC"
+        self.assertEqual(translate_scores(score_string), [32, 33, 34])
 
     def test_read_fastq(self):
         fastq_string = self.get_test_fastq()

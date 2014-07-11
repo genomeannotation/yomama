@@ -10,3 +10,9 @@ def reverse_complement(seq):
         if base not in 'actgnACTGN':
             seq = seq[0:i] + 'N' + seq[i+1:]
     return ''.join([rev_comp_dict.get(base) for base in reversed(seq)])
+
+def score_as_int(char, offset=33):
+    return ord(char) - offset
+
+def score_as_char(num, offset=33):
+    return chr(num + offset)
