@@ -4,6 +4,7 @@ import sys
 from src.fastq import read_fastq
 from src.oligos import read_oligos, deoligo_seqs
 from src.consensus import call_consensus_for_yohan # ;-)
+from src.reports import write_top_n_counts
 
 def main(args):
     if len(args) == 1:
@@ -38,6 +39,11 @@ def main(args):
         with open("homozygous.fasta", "w") as ones,\
              open("heterozygous.fasta", "w") as twos:
             call_consensus_for_yohan(counts, ones, twos)
+
+        # Generate a report
+        with open("top_3_counts.tsv", "w") as report:
+            write_top_n_counts(counts, 3, report)
+
     elif mode == "heteroplasmy":
         print("heteroplasmy not implemented yet")
         exit()

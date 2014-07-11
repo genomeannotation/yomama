@@ -1,31 +1,33 @@
-def top_n_counts(counts_dict, num_counts):
+def write_top_n_counts(sorted_reads, num_counts, outfile):
     """Generates a table giving total reads and top N read counts.
 
     Format of output is locus  sample  total_reads  top_n_counts
 
     Args:
-        counts_dict: a dictionary that maps loci to locus dicts,
-                     which map samples to sample dicts,
-                     which map sequences to counts :)
+        sorted_reads: a SortedReads object
         num_counts: the number of sequence counts to include in the output
     """
-    sys.stdout.write("locus\tsample\ttotal_reads\ttop_" +
-                        str(num_counts) + "_seq_counts\n")
-    for locus, locus_dict in counts_dict.items():
-        for sample, sample_dict in locus_dict.items():
-            sys.stdout.write(locus + "\t" + sample + "\t")
-            seq_counts = sample_dict.values()
-            if len(seq_counts) < num_counts:
-                sys.stdout.write("(fewer than " + str(num_counts) +
-                                " uniq seqs; counts are: "+
-                                str(seq_counts) + ")\n")
-                continue
-            total_reads = sum(seq_counts)
-            top_n_counts = sorted(seq_counts)[::-1][:3]
-            sys.stdout.write(str(total_reads) + "\t")
-            for count in top_n_counts[:-1]:
-                sys.stdout.write(str(count) + ",")
-            sys.stdout.write(str(top_n_counts[-1]) + "\n")
+    outfile.write("locus\tsample\ttotal_reads\ttop_" +
+                        str(num_counts) + "_seq_counts_proportions\n")
+    for read in sorted_reads.reads_by_locus_sample():
+        locus = read[0]
+        sample = read[1]
+        seqs_counts = read[2]
+        # seqs_counts is a list of (seq, [qual], count) tuples
+        outfile.write(locus + "\t" + sample + "\t")
+        seq_counts = [s[2] for s in seqs_counts]
+        if len(seq_counts) < num_counts:
+            outfile.write("(fewer than " + str(num_counts) +
+                            " uniq seqs; counts are: "+
+                            str(seq_counts) + ")\n")
+            continue
+        total_reads = sum(seq_counts)
+        top_n_counts = sorted(seq_counts)[::-1][:3]
+        outfile.write(str(total_reads) + "\t")
+        proportions = []
+        for count in top_n_counts:
+            proportions.append(str(float(count) / total_reads))
+        outfile.write(",".join(proportions) + "\n")
 
 
 def print_summary(counts_dict):
