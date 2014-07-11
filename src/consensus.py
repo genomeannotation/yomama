@@ -30,18 +30,19 @@ def call_consensus_for_yohan(sorted_reads, one_seq_file, two_seqs_file):
         locus = read[0]
         sample = read[1]
         seqs_counts = read[2]
+        # seqs_counts is a list of (seq, [qual], count) tuples
         consensus = yohan_consensus(seqs_counts)
         if consensus:
             if len(consensus) == 1:
                 seq = consensus[0][0]
-                count = consensus[0][1]
+                count = consensus[0][2]
                 # write it twice
                 onefers.write(consensus_fasta(locus, sample, seq, count))
                 onefers.write(consensus_fasta(locus, sample, seq, count))
             elif len(consensus) == 2:
                 for entry in consensus:
                     seq = entry[0]
-                    count = entry[1]
+                    count = entry[2]
                     twofers.write(consensus_fasta(locus, sample, seq, count))
 
 def consensus_fasta(locus, sample, seq, count):
@@ -89,20 +90,19 @@ def yohan_consensus(seqs_counts):
     MIN_COUNT_LOW = 10
     # Sort seqs_counts by count, from greatest to least
     sorted_seqs = sorted(seqs_counts, key=operator.itemgetter(2), reverse=True)
-    # sorted_seqs is a list of (seq, count) tuples
     if not sorted_seqs:
         return []
     elif len(sorted_seqs) == 1:
         seq = sorted_seqs[0]
-        if seq[1] > MIN_COUNT_HIGH:
+        if seq[2] > MIN_COUNT_HIGH:
             return [seq]
         else:
             return []
     elif len(sorted_seqs) == 2:
         first_seq = sorted_seqs[0]
-        if first_seq[1] > MIN_COUNT_HIGH:
+        if first_seq[2] > MIN_COUNT_HIGH:
             second_seq = sorted_seqs[1]
-            if second_seq[1] > 0.5 * first_seq[1]:
+            if second_seq[2] > 0.5 * first_seq[2]:
                 return [first_seq, second_seq]
             else:
                 return [first_seq]
@@ -112,9 +112,9 @@ def yohan_consensus(seqs_counts):
         first_seq = sorted_seqs[0]
         second_seq = sorted_seqs[1]
         third_seq = sorted_seqs[2]
-        first_seq_count = first_seq[1]
-        second_seq_count = second_seq[1]
-        third_seq_count = third_seq[1]
+        first_seq_count = first_seq[2]
+        second_seq_count = second_seq[2]
+        third_seq_count = third_seq[2]
         if first_seq_count < MIN_COUNT_LOW:
             # fail
             return []
