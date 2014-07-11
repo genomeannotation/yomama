@@ -5,6 +5,15 @@ from src.sequence import add_sample_name_from_header
 
 PrimerPair = namedtuple("Oligo", "left right")
 
+class SortedReads:
+    def __init__(self, reads):
+        self.reads = reads
+
+    def reads_by_locus_sample(self):
+        for locus, locus_dict in self.reads.items():
+            for sample, sample_dict in locus_dict.items():
+                yield (locus, sample, [(bases, seq_data[0], seq_data[1]) for bases, seq_data in sample_dict.items()])
+
 def read_oligos(io_buffer):
     oligos = {} # Map of locus names to primer pairs
     for line in io_buffer:
@@ -71,7 +80,7 @@ def deoligo_seqs(seqs, oligos, pdiffs):
 
         # Build dictionary of counts of unique reads for each locus/sample
         update_counts_dict(counts, seq)
-    return counts
+    return SortedReads(counts)
 
 def update_counts_dict(counts_dict, seq):
     # dict maps locus to a locus_dict, which maps sample to a seq dict,
@@ -87,6 +96,7 @@ def update_locus_dict(locus_dict, seq):
 
 def update_sample_dict(sample_dict, seq):
     if seq.bases not in sample_dict:
-        sample_dict[seq.bases] = 0
-    sample_dict[seq.bases] += 1
+        sample_dict[seq.bases] = ([], 0)
+    sample_dict[seq.bases][0].append(seq.scores)
+    sample_dict[seq.bases][1] += 1
 

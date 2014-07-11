@@ -12,6 +12,11 @@ class TestOligos(unittest.TestCase):
         "primer\tGATACA\tGATACA\tsample1\n"\
         "primer\tGATACA\tGATACA\tsample2\n")
 
+    def test_sorted_reads_reads_by_locus_sample(self):
+        reads_dict = {"locus":{"sample":{"ATGC":(["SCORES1", "SCORES2"], 2)}}}
+        reads = SortedReads(reads_dict)
+        self.assertEqual(list(reads.reads_by_locus_sample()), [("locus", "sample", [("ATGC", ["SCORES1", "SCORES2"], 2)])])
+
     def test_read_oligos(self):
         oligos = read_oligos(self.ipr_file)
         self.assertEquals(2, len(oligos))
