@@ -30,8 +30,7 @@ def call_consensus_for_yohan(sorted_reads, one_seq_file, two_seqs_file):
         locus = read[0]
         sample = read[1]
         seqs_counts = read[2]
-        # TODO not sample dict...
-        consensus = yohan_consensus(sample_dict)
+        consensus = yohan_consensus(seqs_counts)
         if consensus:
             if len(consensus) == 1:
                 seq = consensus[0][0]
@@ -80,10 +79,17 @@ def call_consensus(seqs_dict, min_count=0, min_percent=0.0):
     else:
         return passing_seqs
 
-def yohan_consensus(seqs_dict):
+def yohan_consensus(seqs_counts):
+    """Returns a list of 0, 1 or 2 [seq, count] lists.
+
+    Args:
+        seqs_counts: a list of (seq, [qual], count) tuples
+    """
     MIN_COUNT_HIGH = 50
     MIN_COUNT_LOW = 10
-    sorted_seqs = sorted(seqs_dict.items(), key=operator.itemgetter(1), reverse=True)
+    # Sort seqs_counts by count, from greatest to least
+    sorted_seqs = sorted(seqs_counts, key=operator.itemgetter(2), reverse=True)
+    # sorted_seqs is a list of (seq, count) tuples
     if not sorted_seqs:
         return []
     elif len(sorted_seqs) == 1:
