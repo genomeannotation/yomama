@@ -15,6 +15,8 @@ def main(args):
     mode = args[1]
 
     if mode == "consensus":
+        BARCODE_DIFFS = 0
+        LINKER_DIFFS = 0
         PRIMER_DIFFS = 2
 
         # Read oligos file
@@ -30,19 +32,19 @@ def main(args):
             if not seqs:
                 sys.stderr.write("Oh snap, failed to read fastq.\n")
                 exit()
-            counts = deoligo_seqs(seqs, oligos, PRIMER_DIFFS)
+            sorted_reads = deoligo_seqs(seqs, oligos, PRIMER_DIFFS)
 
-        if not counts:
+        if not sorted_reads:
             sys.stderr.write("Failed to deoligo seqs, I'm out.\n")
 
         # Now call consensus
         with open("homozygous.fasta", "w") as ones,\
              open("heterozygous.fasta", "w") as twos:
-            call_consensus_for_yohan(counts, ones, twos)
+            call_consensus_for_yohan(sorted_reads, ones, twos)
 
         # Generate a report
         with open("top_3_counts.tsv", "w") as report:
-            write_top_n_counts(counts, 3, report)
+            write_top_n_counts(sorted_reads, 3, report)
 
     elif mode == "heteroplasmy":
         print("heteroplasmy not implemented yet")
