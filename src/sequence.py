@@ -41,3 +41,10 @@ def add_sample_name_from_header(seq):
     except IndexError:
         sys.stderr.write("Unable to find sample name in seq with header " + seq.header + "\n")
         return
+
+def sliding_window_filter(seq, window_size, min_avg):
+    for start in range(0, len(seq.scores)-window_size+1):
+        avg = sum(seq.scores[start:start+window_size])/window_size
+        if avg < min_avg:
+            return False
+    return True

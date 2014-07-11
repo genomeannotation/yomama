@@ -2,12 +2,12 @@
 
 import unittest
 from mock import Mock
-from src.sequence import Sequence, add_sample_name_from_header
+from src.sequence import Sequence, add_sample_name_from_header, sliding_window_filter
 
 class TestSequence(unittest.TestCase):
 
     def setUp(self):
-        self.seq1 = Sequence("seq1", "GATTACA", [30, 30, 30, 30, 30, 30, 30])
+        self.seq1 = Sequence("seq1", "GATTACA", [20, 30, 40, 10, 50, 50, 10, 13])
 
     def test_get_subseq(self):
         self.assertEqual("ATTA", self.seq1.get_subseq(2, 5))
@@ -32,6 +32,11 @@ class TestSequence(unittest.TestCase):
         expected += "Sample: foo_sample\n"
         actual = str(self.seq1)
         self.assertEqual(expected, actual)
+
+    def test_sliding_window_filter(self):
+        self.assertEqual(sliding_window_filter(self.seq1, 7, 28), True)
+        self.assertEqual(sliding_window_filter(self.seq1, 7, 29), True)
+        self.assertEqual(sliding_window_filter(self.seq1, 7, 30), False)
 
 ##########################
 def suite():
