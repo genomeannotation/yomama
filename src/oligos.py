@@ -96,7 +96,7 @@ def update_locus_dict(locus_dict, seq):
 
 def update_sample_dict(sample_dict, seq):
     if seq.bases not in sample_dict:
-        sample_dict[seq.bases] = ([], 0)
+        sample_dict[seq.bases] = [[], 0]
     sample_dict[seq.bases][0].append(seq.scores)
     sample_dict[seq.bases][1] += 1
 
