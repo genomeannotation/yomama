@@ -23,25 +23,27 @@ def call_consensus_sequences(counts_dict, min_count, min_percentage,
                         percent = str(consensus[seq])
                         twofers.write(consensus_fasta(locus, sample, seq, percent))
 
-def call_consensus_for_yohan(counts_dict, one_seq_file, two_seqs_file):
+def call_consensus_for_yohan(sorted_reads, one_seq_file, two_seqs_file):
     onefers = one_seq_file
     twofers = two_seqs_file
-    for locus, locus_dict in counts_dict.items():
-        for sample, sample_dict in locus_dict.items():
-            # consensus is a list of tuples of (seq, count)
-            consensus = yohan_consensus(sample_dict)
-            if consensus:
-                if len(consensus) == 1:
-                    seq = consensus[0][0]
-                    count = consensus[0][1]
-                    # write it twice
-                    onefers.write(consensus_fasta(locus, sample, seq, count))
-                    onefers.write(consensus_fasta(locus, sample, seq, count))
-                elif len(consensus) == 2:
-                    for entry in consensus:
-                        seq = entry[0]
-                        count = entry[1]
-                        twofers.write(consensus_fasta(locus, sample, seq, count))
+    for read in sorted_reads.reads_by_locus_sample():
+        locus = read[0]
+        sample = read[1]
+        seqs_counts = read[2]
+        # TODO not sample dict...
+        consensus = yohan_consensus(sample_dict)
+        if consensus:
+            if len(consensus) == 1:
+                seq = consensus[0][0]
+                count = consensus[0][1]
+                # write it twice
+                onefers.write(consensus_fasta(locus, sample, seq, count))
+                onefers.write(consensus_fasta(locus, sample, seq, count))
+            elif len(consensus) == 2:
+                for entry in consensus:
+                    seq = entry[0]
+                    count = entry[1]
+                    twofers.write(consensus_fasta(locus, sample, seq, count))
 
 def consensus_fasta(locus, sample, seq, count):
     result = ">" + locus + "_" + sample + "_" + str(count) + "\n"
