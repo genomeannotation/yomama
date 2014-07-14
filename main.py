@@ -47,8 +47,27 @@ def main(args):
             write_top_n_counts(sorted_reads, 3, report)
 
     elif mode == "heteroplasmy":
-        print("heteroplasmy not implemented yet")
-        exit()
+        BARCODE_DIFFS = 0
+        LINKER_DIFFS = 0
+        PRIMER_DIFFS = 2
+
+        # Read oligos file
+        with open("foo.oligos", "r") as oligos:
+            oligos = read_oligos(oligos)
+        if not oligos:
+            sys.stderr.write("Aww naw, couldn't read oligos.\n")
+            exit()
+
+        # Read fastq file and deoligo seqs
+        with open("foo.fastq", "r") as fastq:
+            seqs = read_fastq(fastq)
+            if not seqs:
+                sys.stderr.write("Oh snap, failed to read fastq.\n")
+                exit()
+            sorted_reads = deoligo_seqs(seqs, oligos, BARCODE_DIFFS, LINKER_DIFFS, PRIMER_DIFFS)
+
+        if not sorted_reads:
+            sys.stderr.write("Failed to deoligo seqs, I'm out.\n")
     else:
         print("Invalid mode '"+mode+"', use 'consensus' or 'heteroplasmy'")
 

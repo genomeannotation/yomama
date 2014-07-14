@@ -58,7 +58,7 @@ def sort_seq(oligos, seq, max_mismatch = 0):
             return
 
 def deoligo_seqs(seqs, oligos, bdiffs, ldiffs, pdiffs):
-    counts = {}
+    sorted_reads = {}
     for seq in seqs:
         # Get sample name for each sequence
         add_sample_name_from_header(seq)
@@ -79,10 +79,10 @@ def deoligo_seqs(seqs, oligos, bdiffs, ldiffs, pdiffs):
             continue
 
         # Build dictionary of counts of unique reads for each locus/sample
-        update_counts_dict(counts, seq)
+        update_reads_dict(sorted_reads, seq)
     return SortedReads(counts)
 
-def update_counts_dict(counts_dict, seq):
+def update_reads_dict(counts_dict, seq):
     # dict maps locus to a locus_dict, which maps sample to a seq dict,
     # which maps seqs to counts. omg wtf.
     if seq.locus not in counts_dict:
