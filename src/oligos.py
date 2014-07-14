@@ -1,6 +1,6 @@
 import sys
 from collections import namedtuple
-from src.sequtil import reverse_complement
+from src.sequtil import reverse_complement, compare_seqs
 from src.sequence import add_sample_name_from_header
 
 PrimerPair = namedtuple("Oligo", "left right")
@@ -35,20 +35,10 @@ def sort_seq(oligos, seq, max_mismatch = 0):
             seq.bases = seq.bases[len(primer_pair.left):-len(primer_pair.right)] # Trim
             return
         else: # Doesn't match perfectly, check if there's few enough mismatches
-            left_mismatch = 0
-            for i in range(0, len(primer_pair.left)):
-                if primer_pair.left[i] != seq_left[i]:
-                    left_mismatch += 1
-                    if left_mismatch > max_mismatch:
-                        break
+            left_mismatch = compare_seqs(primer_pair.left, seq_left)
             if left_mismatch > max_mismatch:
                 continue
-            right_mismatch = 0
-            for i in range(0, len(primer_pair.right)):
-                if primer_pair.right[i] != seq_right[i]:
-                    right_mismatch += 1
-                    if right_mismatch > max_mismatch:
-                        break
+            right_mismatch = compare_seqs(primer_pair.right, seq_right)
             if right_mismatch > max_mismatch:
                 continue
 

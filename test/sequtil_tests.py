@@ -1,19 +1,24 @@
 #!/usr/bin/env python
 
 import unittest
-from src.sequtil import reverse_complement
+from src.sequtil import *
 
 class TestTranslate(unittest.TestCase):
 
     def test_reverse_complement(self):
-        self.assertEquals('C', reverse_complement('G'))
-        self.assertEquals('CAT', reverse_complement('ATG'))
+        self.assertEqual('C', reverse_complement('G'))
+        self.assertEqual('CAT', reverse_complement('ATG'))
 
     def test_reverse_complement_with_bogus_base(self):
-        self.assertEquals('CATN', reverse_complement('MATG'))
+        self.assertEqual('CATN', reverse_complement('MATG'))
 
     def test_reverse_complement_longer_seq(self):
-        self.assertEquals('TGTAATCTGTAATCTGTAATCTGTAATCTGTAATC', reverse_complement('GATTACAGATTACAGATTACAGATTACAGATTACA'))
+        self.assertEqual('TGTAATCTGTAATCTGTAATCTGTAATCTGTAATC', reverse_complement('GATTACAGATTACAGATTACAGATTACAGATTACA'))
+
+    def test_compare_seqs(self):
+        seq1 = "GATACA"
+        seq2 = "GATCCC"
+        self.assertEqual(compare_seqs(seq1, seq2), 2)
 
         
 ##########################

@@ -16,3 +16,10 @@ def score_as_int(char, offset=33):
 
 def score_as_char(num, offset=33):
     return chr(num + offset)
+
+def compare_seqs(seq1, seq2):
+    mismatch = 0
+    for i in range(0, len(seq1)):
+        if seq1[i] != seq2[i]:
+            mismatch += 1
+    return mismatch
