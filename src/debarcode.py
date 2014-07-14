@@ -1,10 +1,6 @@
 def read_samples(io_buffer):
-    oligos = {} # Map of locus names to primer pairs
+    samples = {}
     for line in io_buffer:
-        if not line:
-            continue
-        columns = line.strip("\t\n ").split("\t")
-        if len(columns) != 4:
-            continue
-        oligos[columns[3]] = PrimerPair(columns[1], columns[2])
-    return oligos
+        columns = line.strip().split("\t")
+        samples[columns[0]] = (columns[2], columns[1])
+    return samples
