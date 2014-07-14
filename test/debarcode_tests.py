@@ -13,8 +13,8 @@ class TestDebarcode(unittest.TestCase):
         "B1\tACGCTCGACA\tRX100706_001\n")
 
     def test_read_samples(self):
-        expected = {"A1" : ("20110222_001_A_001", "ACGAGTGCGT"),\
-                    "B1" : ("RX100706_001", "ACGCTCGACA")}
+        expected = {"20110222_001_A_001" : "ACGAGTGCGT",\
+                    "RX100706_001" : "ACGCTCGACA"}
         actual = read_samples(self.samples_file)
         self.assertEqual(expected, actual)
 
