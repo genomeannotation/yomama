@@ -18,6 +18,18 @@ class TestDebarcode(unittest.TestCase):
         actual = read_samples(self.samples_file)
         self.assertEqual(expected, actual)
 
+    def test_debarcode_seqs(self):
+        seqs = [Mock(), Mock()]
+        seqs[0].bases = "ACGTGTGCGTACACTGACGACATGGTTCTACAGTCCATGTGGTCCATGCTCTGAGTTGCATTTGATAGAATTGGAGGCCGAAGCGTACCCGAACTGGTAAATGTTGATGACCCAGATGTTTAGAAATTTGGAATTTGGTGTTATCCAATACAACAGGGAGTCGAGAAGTGGTTAGGCCCTAGCAAACCGAATTCAATTGACCTAAAGGAAAGGCGAGATAACGGATTTGGTGGGAATTGGGGTCCTTTACGGAAACGTCCTTTGGGAATCGGAGGATTCCGTTAAAAGGACCAAAAAAGGCCAAAAAATTAAAGGGTTT"
+        seqs[1].bases = "ACGCTCGACATACGGTAGCAGAGACTTGGTCTTATCTGATCGCCTTCGAACCTCTAACTTTCGTTCTTGGG"
+
+        samples = {"20110222_001_A_001" : "ACGAGTGCGT",\
+                   "RX100706_001" : "ACGCTCGACA"}
+
+        debarcoded_seqs = list(debarcode_seqs(seqs, samples, 1))
+        self.assertEqual(debarcoded_seqs[0].sample, "20110222_001_A_001")
+        self.assertEqual(debarcoded_seqs[1].sample, "RX100706_001")
+
 
 ##########################
 def suite():
