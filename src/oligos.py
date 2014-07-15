@@ -51,7 +51,8 @@ def deoligo_seqs(seqs, oligos, bdiffs, ldiffs, pdiffs):
     sorted_reads = {}
     for seq in seqs:
         # Get sample name for each sequence
-        add_sample_name_from_header(seq)
+        if not seq.sample:
+            add_sample_name_from_header(seq)
         
         # Skip if no sample name found
         if not seq.sample:
