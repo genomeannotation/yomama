@@ -18,10 +18,9 @@ def debarcode_seqs(seqs, samples, mismatch_limit):
                 seq.sample = sample
                 break
             else:
-                mismatches = compare_seqs(barcode, seq_barcode)
-                if mismatches <= mismatch_limit:
+                match = compare_seqs(barcode, seq_barcode, mismatch_limit)
+                if match:
                     seq.bases = seq.bases[len(barcode):] # Trim
                     seq.sample = sample
                     break
         yield seq
-    print("Debarcoded")

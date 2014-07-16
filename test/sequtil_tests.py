@@ -18,7 +18,8 @@ class TestTranslate(unittest.TestCase):
     def test_compare_seqs(self):
         seq1 = "GATACA"
         seq2 = "GATCCC"
-        self.assertEqual(compare_seqs(seq1, seq2), 2)
+        self.assertEqual(compare_seqs(seq1, seq2, 1), False)
+        self.assertEqual(compare_seqs(seq1, seq2, 2), True)
 
         
 ##########################

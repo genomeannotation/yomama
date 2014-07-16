@@ -26,32 +26,37 @@ def read_oligos(io_buffer):
         oligos[columns[3]] = PrimerPair(columns[1], columns[2])
     return oligos
 
+def strip_primer(seq, primer1, primer2, max_mismatch):
+    seq_left = seq.bases[:len(primer1)] 
+    seq_right = reverse_complement(seq.bases[-len(primer2):])
+    if primer1 == seq_left and\
+       primer2 == seq_right:
+        seq.bases = seq.bases[len(primer1):-len(primer2)] # Trim
+        return True
+    else: # Doesn't match perfectly, check if there's few enough mismatches
+        left_match = compare_seqs(primer1, seq_left, max_mismatch)
+        if not left_match:
+            return False
+        right_match = compare_seqs(primer2, seq_right, max_mismatch)
+        if not right_match:
+            return False
+
+        # It's good enough, take it
+        seq.bases = seq.bases[len(primer1):-len(primer2)] # Trim
+        return True
+    return False
+
 def sort_seq(oligos, seq, max_mismatch = 0):
     for locus, primer_pair in oligos.items():
-        seq_left = seq.bases[:len(primer_pair.left)] 
-        seq_right = reverse_complement(seq.bases[-len(primer_pair.right):])
-        if primer_pair.left == seq_left and\
-           primer_pair.right == seq_right:
+        if strip_primer(seq, primer_pair.left, primer_pair.right, max_mismatch):
             seq.locus = locus # Sort
-            seq.bases = seq.bases[len(primer_pair.left):-len(primer_pair.right)] # Trim
-            return
-        else: # Doesn't match perfectly, check if there's few enough mismatches
-            left_mismatch = compare_seqs(primer_pair.left, seq_left)
-            if left_mismatch > max_mismatch:
-                continue
-            right_mismatch = compare_seqs(primer_pair.right, seq_right)
-            if right_mismatch > max_mismatch:
-                continue
-
-            # It's good enough, take it
-            seq.locus = locus # Sort
-            seq.bases = seq.bases[len(primer_pair.left):-len(primer_pair.right)] # Trim
             return
 
 def deoligo_seqs(seqs, oligos, bdiffs, ldiffs, pdiffs):
     with open("foo.samples", "r") as samples_file:
         samples = read_samples(samples_file)
         seqs = debarcode_seqs(seqs, samples, bdiffs)
+        print("Debarcoded")
 
     sorted_reads = {}
     for seq in seqs:
