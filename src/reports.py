@@ -1,3 +1,5 @@
+import sys
+
 def write_top_n_counts(sorted_reads, num_counts, outfile):
     """Generates a table giving total reads and top N read counts.
 
@@ -30,15 +32,15 @@ def write_top_n_counts(sorted_reads, num_counts, outfile):
         outfile.write(",".join(proportions) + "\n")
 
 
-def print_summary(counts_dict):
+def write_summary(counts_dict, io_buffer=sys.stdout):
     """Prints a table of the counts of each seq at each locus/sample point."""
     for locus, locus_dict in counts_dict.items():
         for sample, sample_dict in locus_dict.items():
             for seq, count in sample_dict.items():
-                print(locus+"\t"+sample+"\t"+seq+"\t"+str(count))
+                io_buffer.write(locus+"\t"+sample+"\t"+seq+"\t"+str(count)+"\n")
 
 
-def print_read_counts(counts_dict):
+def write_read_counts(counts_dict, io_buffer=sys.stdout):
     """Writes a matrix of total read counts for each locus/sample."""
     # Generate list of loci, samples
     loci = sorted(counts_dict.keys())
@@ -50,41 +52,41 @@ def print_read_counts(counts_dict):
     samples = sorted(samples)
 
     # Print header
-    sys.stdout.write("\t")
+    io_buffer.write("\t")
     for sample in samples:
-        sys.stdout.write(sample + "\t")
-    sys.stdout.write("total\n")
+        io_buffer.write(sample + "\t")
+    io_buffer.write("total\n")
 
     # For each locus, write read counts for each sample
     for locus in loci:
         if locus not in counts_dict:
-            write_zero_row(locus, samples)
+            write_zero_row(locus, samples, io_buffer)
         else:
-            write_counts_per_sample(locus, counts_dict[locus], samples)
+            write_counts_per_sample(locus, counts_dict[locus], samples, io_buffer)
 
 
-def write_zero_row(locus, samples):
-    sys.stdout.write(locus + "\t")
+def write_zero_row(locus, samples, io_buffer):
+    io_buffer.write(locus + "\t")
     for sample in samples:
-        sys.stdout.write("0\t")
-    sys.stdout.write("0\n")
+        io_buffer.write("0\t")
+    io_buffer.write("0\n")
 
 
-def write_counts_per_sample(locus, locus_dict, samples):
-    sys.stdout.write(locus + "\t")
+def write_counts_per_sample(locus, locus_dict, samples, io_buffer):
+    io_buffer.write(locus + "\t")
     total = 0
     for sample in samples:
         if sample not in locus_dict:
-            sys.stdout.write("0\t")
+            io_buffer.write("0\t")
         else:
             read_count = total_reads(locus_dict[sample])
             total += read_count
-            sys.stdout.write(str(read_count) + "\t")
-    sys.stdout.write(str(total) + "\n")
+            io_buffer.write(str(read_count) + "\t")
+    io_buffer.write(str(total) + "\n")
 
 
 def total_reads(sample_dict):
     total = 0
-    for count in sample_dict.values():
-        total += count
+    for info in sample_dict.values():
+        total += info[1]
     return total

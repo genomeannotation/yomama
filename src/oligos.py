@@ -2,6 +2,7 @@ import sys
 from collections import namedtuple
 from src.sequtil import reverse_complement, compare_seqs
 from src.sequence import add_sample_name_from_header
+from src.debarcode import read_samples, debarcode_seqs
 
 PrimerPair = namedtuple("Oligo", "left right")
 
@@ -48,6 +49,10 @@ def sort_seq(oligos, seq, max_mismatch = 0):
             return
 
 def deoligo_seqs(seqs, oligos, bdiffs, ldiffs, pdiffs):
+    with open("foo.samples", "r") as samples_file:
+        samples = read_samples(samples_file)
+        seqs = debarcode_seqs(seqs, samples, bdiffs)
+
     sorted_reads = {}
     for seq in seqs:
         # Get sample name for each sequence
@@ -71,7 +76,7 @@ def deoligo_seqs(seqs, oligos, bdiffs, ldiffs, pdiffs):
 
         # Build dictionary of counts of unique reads for each locus/sample
         update_reads_dict(sorted_reads, seq)
-    return SortedReads(counts)
+    return SortedReads(sorted_reads)
 
 def update_reads_dict(counts_dict, seq):
     # dict maps locus to a locus_dict, which maps sample to a seq dict,

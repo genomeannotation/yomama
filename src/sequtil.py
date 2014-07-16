@@ -19,7 +19,7 @@ def score_as_char(num, offset=33):
 
 def compare_seqs(seq1, seq2):
     mismatch = 0
-    for i in range(0, len(seq1)):
+    for i in range(0, min(len(seq1), len(seq2))):
         if seq1[i] != seq2[i]:
             mismatch += 1
     return mismatch
