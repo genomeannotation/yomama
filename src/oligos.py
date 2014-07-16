@@ -23,7 +23,9 @@ def read_oligos(io_buffer):
         columns = line.strip("\t\n ").split("\t")
         if len(columns) != 4:
             continue
-        oligos[columns[3]] = PrimerPair(columns[1], columns[2])
+        if columns[0] not in oligos:
+            oligos[columns[0]] = {}
+        oligos[columns[0]][columns[3]] = PrimerPair(columns[1], columns[2])
     return oligos
 
 def strip_primer(seq, primer1, primer2, max_mismatch):
@@ -47,7 +49,7 @@ def strip_primer(seq, primer1, primer2, max_mismatch):
     return False
 
 def sort_seq(oligos, seq, max_mismatch = 0):
-    for locus, primer_pair in oligos.items():
+    for locus, primer_pair in oligos["primer"].items():
         if strip_primer(seq, primer_pair.left, primer_pair.right, max_mismatch):
             seq.locus = locus # Sort
             return
