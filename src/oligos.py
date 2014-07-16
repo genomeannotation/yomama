@@ -49,6 +49,11 @@ def strip_primer(seq, primer1, primer2, max_mismatch):
     return False
 
 def sort_seq(oligos, seq, max_mismatch = 0):
+    if "linker" in oligos:
+        for linker_pair in oligos["linker"].values():
+            if strip_primer(seq, linker_pair.left, linker_pair.right, max_mismatch):
+                return
+
     for locus, primer_pair in oligos["primer"].items():
         if strip_primer(seq, primer_pair.left, primer_pair.right, max_mismatch):
             seq.locus = locus # Sort
