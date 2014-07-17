@@ -16,8 +16,8 @@ def main(args):
 
     if mode == "consensus":
         BARCODE_DIFFS = 1
-        LINKER_DIFFS = 0
-        PRIMER_DIFFS = 2
+        LINKER_DIFFS = 3
+        PRIMER_DIFFS = 3
 
         # Read oligos file
         with open("foo.oligos", "r") as oligos:

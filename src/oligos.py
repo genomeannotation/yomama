@@ -35,27 +35,37 @@ def strip_primer(seq, primer1, primer2, max_mismatch):
        primer2 == seq_right:
         seq.bases = seq.bases[len(primer1):-len(primer2)] # Trim
         return True
-    else: # Doesn't match perfectly, check if there's few enough mismatches
-        left_match = compare_seqs(primer1, seq_left, max_mismatch)
-        if not left_match:
-            return False
-        right_match = compare_seqs(primer2, seq_right, max_mismatch)
-        if not right_match:
-            return False
-
-        # It's good enough, take it
+    if primer1 == seq_right and\
+       primer2 == seq_left:
         seq.bases = seq.bases[len(primer1):-len(primer2)] # Trim
         return True
+    else: # Doesn't match perfectly, check if there's few enough mismatches
+        left_match = compare_seqs(primer1, seq_left, max_mismatch)
+        right_match = compare_seqs(primer2, seq_right, max_mismatch)
+        if left_match and right_match:
+            # It's good enough, take it
+            seq.bases = seq.bases[len(primer1):-len(primer2)] # Trim
+            return True
+        # Try the other way
+        left_match = compare_seqs(primer1, seq_right, max_mismatch)
+        right_match = compare_seqs(primer2, seq_left, max_mismatch)
+        if left_match and right_match:
+            # It's good enough, take it
+            seq.bases = seq.bases[len(primer1):-len(primer2)] # Trim
+            return True
     return False
 
-def sort_seq(oligos, seq, max_mismatch = 0):
+def sort_seq(oligos, seq, ldiffs, pdiffs):
     if "linker" in oligos:
+        delinkered = False
         for linker_pair in oligos["linker"].values():
-            if strip_primer(seq, linker_pair.left, linker_pair.right, max_mismatch):
-                return
+            if strip_primer(seq, linker_pair.left, linker_pair.right, ldiffs):
+                delinkered = True
+        if not delinkered:
+            return
 
     for locus, primer_pair in oligos["primer"].items():
-        if strip_primer(seq, primer_pair.left, primer_pair.right, max_mismatch):
+        if strip_primer(seq, primer_pair.left, primer_pair.right, pdiffs):
             seq.locus = locus # Sort
             return
 
@@ -78,7 +88,7 @@ def deoligo_seqs(seqs, oligos, bdiffs, ldiffs, pdiffs):
             continue
 
         # Deprimer each sequence
-        sort_seq(oligos, seq, max_mismatch=pdiffs)
+        sort_seq(oligos, seq, ldiffs, pdiffs)
 
         # Skip if deprimering didn't work
         if not seq.locus:
