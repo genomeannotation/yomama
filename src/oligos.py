@@ -29,29 +29,31 @@ def read_oligos(io_buffer):
     return oligos
 
 def strip_primer(seq, primer1, primer2, max_mismatch):
-    seq_left = seq.bases[:len(primer1)] 
-    seq_right = reverse_complement(seq.bases[-len(primer2):])
-    if primer1 == seq_left and\
-       primer2 == seq_right:
+    seq_left_p1 = seq.bases[:len(primer1)] 
+    seq_left_p2 = seq.bases[:len(primer2)] 
+    seq_right_p1 = reverse_complement(seq.bases[-len(primer1):])
+    seq_right_p2 = reverse_complement(seq.bases[-len(primer2):])
+    if primer1 == seq_left_p1 and\
+       primer2 == seq_right_p2:
         seq.bases = seq.bases[len(primer1):-len(primer2)] # Trim
         return True
-    if primer1 == seq_right and\
-       primer2 == seq_left:
-        seq.bases = seq.bases[len(primer1):-len(primer2)] # Trim
+    if primer1 == seq_right_p1 and\
+       primer2 == seq_left_p2:
+        seq.bases = seq.bases[len(primer2):-len(primer1)] # Trim
         return True
     else: # Doesn't match perfectly, check if there's few enough mismatches
-        left_match = compare_seqs(primer1, seq_left, max_mismatch)
-        right_match = compare_seqs(primer2, seq_right, max_mismatch)
+        left_match = compare_seqs(primer1, seq_left_p1, max_mismatch)
+        right_match = compare_seqs(primer2, seq_right_p2, max_mismatch)
         if left_match and right_match:
             # It's good enough, take it
             seq.bases = seq.bases[len(primer1):-len(primer2)] # Trim
             return True
         # Try the other way
-        left_match = compare_seqs(primer1, seq_right, max_mismatch)
-        right_match = compare_seqs(primer2, seq_left, max_mismatch)
+        left_match = compare_seqs(primer1, seq_right_p1, max_mismatch)
+        right_match = compare_seqs(primer2, seq_left_p2, max_mismatch)
         if left_match and right_match:
             # It's good enough, take it
-            seq.bases = seq.bases[len(primer1):-len(primer2)] # Trim
+            seq.bases = seq.bases[len(primer2):-len(primer1)] # Trim
             return True
     return False
 
@@ -62,12 +64,14 @@ def sort_seq(oligos, seq, ldiffs, pdiffs):
             if strip_primer(seq, linker_pair.left, linker_pair.right, ldiffs):
                 delinkered = True
         if not delinkered:
+            sys.stderr.write("Unable to delinker\n")
             return
 
     for locus, primer_pair in oligos["primer"].items():
         if strip_primer(seq, primer_pair.left, primer_pair.right, pdiffs):
             seq.locus = locus # Sort
             return
+    sys.stderr.write("unable to deprimer\n")
 
 def deoligo_seqs(seqs, oligos, bdiffs, ldiffs, pdiffs):
     with open("foo.samples", "r") as samples_file:

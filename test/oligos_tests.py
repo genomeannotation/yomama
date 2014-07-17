@@ -21,12 +21,18 @@ class TestOligos(unittest.TestCase):
         oligos = read_oligos(self.ipr_file)
         self.assertEquals(2, len(oligos["primer"]))
 
+    def test_strip_primer_reverse_match(self):
+        seq = Mock()
+        seq.bases = "GATACATTGGGGGTGTATC"
+        self.assertTrue(strip_primer(seq, "GATACA", "GATACATT", 0))
+        self.assertEqual(seq.bases, "GGGGG")
+
     def test_sort_seq_positive_match(self):
         oligos = {"primer" : {"foo":PrimerPair("GATACA", "GATACA"), "dog":PrimerPair("ATGC", "ATGC")}}
         seq = Mock()
         seq.bases = "GATACAGGGGGTGTATC"
         seq.locus = ""
-        sort_seq(oligos, seq)
+        sort_seq(oligos, seq, 0, 0)
         self.assertEqual(seq.bases, "GGGGG")
         self.assertEquals(seq.locus, "foo")
 
@@ -35,7 +41,7 @@ class TestOligos(unittest.TestCase):
         seq = Mock()
         seq.bases = "GAGACAGGGGGTGTATC"
         seq.locus = ""
-        sort_seq(oligos, seq)
+        sort_seq(oligos, seq, 0, 0)
         self.assertEqual(seq.bases, "GAGACAGGGGGTGTATC")
         self.assertEquals(seq.locus, "")
 
@@ -44,7 +50,7 @@ class TestOligos(unittest.TestCase):
         seq = Mock()
         seq.bases = "GAGACAGGGGGTGTATA"
         seq.locus = ""
-        sort_seq(oligos, seq, 1)
+        sort_seq(oligos, seq, 1, 1)
         self.assertEqual(seq.bases, "GGGGG")
         self.assertEquals(seq.locus, "foo")
 
