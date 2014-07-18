@@ -21,6 +21,12 @@ class TestTranslate(unittest.TestCase):
         self.assertEqual(compare_seqs(seq1, seq2, 1), False)
         self.assertEqual(compare_seqs(seq1, seq2, 2), True)
 
+    def test_search_seq(self):
+        seq = "CCCCCCGATACACCCCCCC"
+        search = "GATAGA"
+        self.assertEqual(search_seq(seq, search, 0), None)
+        self.assertEqual(search_seq(seq, search, 1), 6)
+
         
 ##########################
 def suite():

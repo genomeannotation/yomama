@@ -28,11 +28,13 @@ def read_oligos(io_buffer):
         oligos[columns[0]][columns[3]] = PrimerPair(columns[1], columns[2])
     return oligos
 
-def strip_primer(seq, primer1, primer2, max_mismatch):
+def strip_primer(seq, primer1, primer2, max_mismatch, do_print=False):
     seq_left_p1 = seq.bases[:len(primer1)] 
     seq_left_p2 = seq.bases[:len(primer2)] 
     seq_right_p1 = reverse_complement(seq.bases[-len(primer1):])
     seq_right_p2 = reverse_complement(seq.bases[-len(primer2):])
+    if not do_print:
+        print(seq_left_p1+"\t"+reverse_complement(seq_right_p2)+"\t:\t")
     if primer1 == seq_left_p1 and\
        primer2 == seq_right_p2:
         seq.bases = seq.bases[len(primer1):-len(primer2)] # Trim
@@ -63,12 +65,13 @@ def sort_seq(oligos, seq, ldiffs, pdiffs):
         for linker_pair in oligos["linker"].values():
             if strip_primer(seq, linker_pair.left, linker_pair.right, ldiffs):
                 delinkered = True
+                break
         if not delinkered:
             sys.stderr.write("Unable to delinker\n")
             return
 
     for locus, primer_pair in oligos["primer"].items():
-        if strip_primer(seq, primer_pair.left, primer_pair.right, pdiffs):
+        if strip_primer(seq, primer_pair.left, primer_pair.right, pdiffs, True):
             seq.locus = locus # Sort
             return
     sys.stderr.write("unable to deprimer\n")

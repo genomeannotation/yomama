@@ -18,6 +18,8 @@ def score_as_char(num, offset=33):
     return chr(num + offset)
 
 def compare_seqs(seq1, seq2, max_mismatch):
+    if seq1 == seq2:
+        return True
     mismatch = 0
     for i in range(0, min(len(seq1), len(seq2))):
         if seq1[i] != seq2[i]:
@@ -25,3 +27,12 @@ def compare_seqs(seq1, seq2, max_mismatch):
             if mismatch > max_mismatch:
                 return False
     return True
+
+def search_seq(seq, search, max_mismatch):
+    if len(seq) < len(search):
+        return None
+    for start in range(0, len(seq)-len(search)):
+        subseq = seq[start:start+len(search)]
+        if compare_seqs(subseq, search, max_mismatch):
+            return start
+    return None
