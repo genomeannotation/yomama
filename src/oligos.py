@@ -1,6 +1,6 @@
 import sys
 from collections import namedtuple
-from src.sequtil import reverse_complement, compare_seqs
+from src.sequtil import reverse_complement, compare_seqs, search_seq
 from src.sequence import add_sample_name_from_header
 from src.debarcode import read_samples, debarcode_seqs
 
@@ -33,13 +33,11 @@ def strip_primer(seq, primer1, primer2, max_mismatch, do_print=False):
     seq_left_p2 = seq.bases[:len(primer2)] 
     seq_right_p1 = reverse_complement(seq.bases[-len(primer1):])
     seq_right_p2 = reverse_complement(seq.bases[-len(primer2):])
-    if not do_print:
-        print(seq_left_p1+"\t"+reverse_complement(seq_right_p2)+"\t:\t")
     if primer1 == seq_left_p1 and\
        primer2 == seq_right_p2:
         seq.bases = seq.bases[len(primer1):-len(primer2)] # Trim
         return True
-    if primer1 == seq_right_p1 and\
+    elif primer1 == seq_right_p1 and\
        primer2 == seq_left_p2:
         seq.bases = seq.bases[len(primer2):-len(primer1)] # Trim
         return True
@@ -56,6 +54,20 @@ def strip_primer(seq, primer1, primer2, max_mismatch, do_print=False):
         if left_match and right_match:
             # It's good enough, take it
             seq.bases = seq.bases[len(primer2):-len(primer1)] # Trim
+            return True
+
+        # Couldn't get both primers, try to get just beginning
+        # Left primer
+        primer_seq = primer1
+        primer_index = search_seq(seq.bases, primer_seq, max_mismatch)
+        if primer_index != None:
+            seq.bases = seq.bases[primer_index+len(primer_seq):]
+            return True
+        # Now try right primer
+        primer_seq = primer2
+        primer_index = search_seq(seq.bases, primer_seq, max_mismatch)
+        if primer_index != None:
+            seq.bases = seq.bases[primer_index+len(primer_seq):]
             return True
     return False
 
