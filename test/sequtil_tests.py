@@ -24,8 +24,8 @@ class TestTranslate(unittest.TestCase):
     def test_search_seq(self):
         seq = "CCCCCCGATACACCCCCCC"
         search = "GATAGA"
-        self.assertEqual(search_seq(seq, search, 0), None)
-        self.assertEqual(search_seq(seq, search, 1), 6)
+        self.assertEqual(search_seq(seq, search, None, 0), None)
+        self.assertEqual(search_seq(seq, search, None, 1), 6)
 
         
 ##########################

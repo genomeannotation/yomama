@@ -28,10 +28,14 @@ def compare_seqs(seq1, seq2, max_mismatch):
                 return False
     return True
 
-def search_seq(seq, search, max_mismatch):
+def search_seq(seq, search, max_distance, max_mismatch):
     if len(seq) < len(search):
         return None
-    for start in range(0, len(seq)-len(search)):
+    if max_distance:
+        search_distance = max_distance
+    else:
+        search_distance = len(seq)-len(search)
+    for start in range(0, search_distance):
         subseq = seq[start:start+len(search)]
         if compare_seqs(subseq, search, max_mismatch):
             return start

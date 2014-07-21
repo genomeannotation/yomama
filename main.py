@@ -2,6 +2,7 @@
 
 import sys
 from src.fastq import read_fastq
+from src.sequence import sliding_window_filter
 from src.oligos import read_oligos, deoligo_seqs
 from src.consensus import call_consensus_for_yohan # ;-)
 from src.reports import write_top_n_counts, write_read_counts
@@ -28,16 +29,26 @@ def main(args):
 
         # Read fastq file and deoligo seqs
         with open("foo.fastq", "r") as fastq:
-            print("Reading fastq...")
-            seqs = read_fastq(fastq)
-            if not seqs:
+            print("Reading and filtering fastq...")
+            read_seqs = read_fastq(fastq)
+            if not read_seqs:
                 sys.stderr.write("Oh snap, failed to read fastq.\n")
                 exit()
+            seqs = []
+            lost_count = 0
+            for seq in read_seqs:
+                if sliding_window_filter(seq, 5, 10):
+                    seqs.append(seq)
+                else:
+                    lost_count += 1
+            print("Lost "+str(lost_count)+" sequences in filtering.")
             print("Sorting reads...")
             sorted_reads = deoligo_seqs(seqs, oligos, BARCODE_DIFFS, LINKER_DIFFS, PRIMER_DIFFS)
 
         if not sorted_reads:
             sys.stderr.write("Failed to deoligo seqs, I'm out.\n")
+
+        del seqs # Don't need them anymore
 
         # Now call consensus
         print("Calling consensus...")

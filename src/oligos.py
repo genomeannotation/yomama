@@ -59,13 +59,13 @@ def strip_primer(seq, primer1, primer2, max_mismatch, do_print=False):
         # Couldn't get both primers, try to get just beginning
         # Left primer
         primer_seq = primer1
-        primer_index = search_seq(seq.bases, primer_seq, max_mismatch)
+        primer_index = search_seq(seq.bases, primer_seq, 1, max_mismatch)
         if primer_index != None:
             seq.bases = seq.bases[primer_index+len(primer_seq):]
             return True
         # Now try right primer
         primer_seq = primer2
-        primer_index = search_seq(seq.bases, primer_seq, max_mismatch)
+        primer_index = search_seq(seq.bases, primer_seq, 1, max_mismatch)
         if primer_index != None:
             seq.bases = seq.bases[primer_index+len(primer_seq):]
             return True
