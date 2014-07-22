@@ -23,4 +23,3 @@ def debarcode_seqs(seqs, samples, mismatch_limit):
                     seq.bases = seq.bases[len(barcode):] # Trim
                     seq.sample = sample
                     break
-        yield seq

@@ -91,7 +91,7 @@ def sort_seq(oligos, seq, ldiffs, pdiffs):
 def deoligo_seqs(seqs, oligos, bdiffs, ldiffs, pdiffs):
     with open("foo.samples", "r") as samples_file:
         samples = read_samples(samples_file)
-        seqs = debarcode_seqs(seqs, samples, bdiffs)
+        debarcode_seqs(seqs, samples, bdiffs)
         print("Debarcoded")
 
     sorted_reads = {}
