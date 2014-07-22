@@ -12,6 +12,8 @@ class Sequence:
         self.scores = scores
         self.locus = locus
         self.sample = sample
+        self.has_both_primers = False
+        self.reverse = False
 
     def __str__(self):
         result = "Header: " + self.header + "\n"

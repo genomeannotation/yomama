@@ -36,10 +36,14 @@ def strip_primer(seq, primer1, primer2, max_mismatch, do_print=False):
     if primer1 == seq_left_p1 and\
        primer2 == seq_right_p2:
         seq.bases = seq.bases[len(primer1):-len(primer2)] # Trim
+        seq.has_both_primers = True
+        seq.reverse = False
         return True
     elif primer1 == seq_right_p1 and\
        primer2 == seq_left_p2:
         seq.bases = seq.bases[len(primer2):-len(primer1)] # Trim
+        seq.has_both_primers = True
+        seq.reverse = True
         return True
     else: # Doesn't match perfectly, check if there's few enough mismatches
         left_match = compare_seqs(primer1, seq_left_p1, max_mismatch)
@@ -47,6 +51,8 @@ def strip_primer(seq, primer1, primer2, max_mismatch, do_print=False):
         if left_match and right_match:
             # It's good enough, take it
             seq.bases = seq.bases[len(primer1):-len(primer2)] # Trim
+            seq.has_both_primers = True
+            seq.reverse = False
             return True
         # Try the other way
         left_match = compare_seqs(primer1, seq_right_p1, max_mismatch)
@@ -54,6 +60,8 @@ def strip_primer(seq, primer1, primer2, max_mismatch, do_print=False):
         if left_match and right_match:
             # It's good enough, take it
             seq.bases = seq.bases[len(primer2):-len(primer1)] # Trim
+            seq.has_both_primers = True
+            seq.reverse = True
             return True
 
         # Couldn't get both primers, try to get just beginning
@@ -62,12 +70,16 @@ def strip_primer(seq, primer1, primer2, max_mismatch, do_print=False):
         primer_index = search_seq(seq.bases, primer_seq, 1, max_mismatch)
         if primer_index != None:
             seq.bases = seq.bases[primer_index+len(primer_seq):]
+            seq.has_both_primers = False
+            seq.reverse = False
             return True
         # Now try right primer
         primer_seq = primer2
         primer_index = search_seq(seq.bases, primer_seq, 1, max_mismatch)
         if primer_index != None:
             seq.bases = seq.bases[primer_index+len(primer_seq):]
+            seq.has_both_primers = False
+            seq.reverse = True
             return True
     return False
 
@@ -114,6 +126,11 @@ def deoligo_seqs(seqs, oligos, bdiffs, ldiffs, pdiffs):
             sys.stderr.write("Failed to deprimer sequence:\t" + seq.header +
                              "\t" + seq.bases + "\n")
             continue
+
+        # Make everything a forward read
+        if seq.reverse:
+            seq.bases = reverse_complement(seq.bases)
+            seq.scores = reversed(seq.scores)
 
         # Build dictionary of counts of unique reads for each locus/sample
         update_reads_dict(sorted_reads, seq)

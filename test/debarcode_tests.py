@@ -26,9 +26,9 @@ class TestDebarcode(unittest.TestCase):
         samples = {"20110222_001_A_001" : "ACGAGTGCGT",\
                    "RX100706_001" : "ACGCTCGACA"}
 
-        debarcoded_seqs = list(debarcode_seqs(seqs, samples, 1))
-        self.assertEqual(debarcoded_seqs[0].sample, "20110222_001_A_001")
-        self.assertEqual(debarcoded_seqs[1].sample, "RX100706_001")
+        debarcode_seqs(seqs, samples, 1)
+        self.assertEqual(seqs[0].sample, "20110222_001_A_001")
+        self.assertEqual(seqs[1].sample, "RX100706_001")
 
 
 ##########################

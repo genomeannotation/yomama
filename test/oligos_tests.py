@@ -26,6 +26,8 @@ class TestOligos(unittest.TestCase):
         seq.bases = "GATACATTGGGGGTGTATC"
         self.assertTrue(strip_primer(seq, "GATACA", "GATACATT", 0))
         self.assertEqual(seq.bases, "GGGGG")
+        self.assertTrue(seq.has_both_primers)
+        self.assertTrue(seq.reverse)
 
     def test_sort_seq_positive_match(self):
         oligos = {"primer" : {"foo":PrimerPair("GATACA", "GATACA"), "dog":PrimerPair("ATGC", "ATGC")}}
@@ -35,6 +37,8 @@ class TestOligos(unittest.TestCase):
         sort_seq(oligos, seq, 0, 0)
         self.assertEqual(seq.bases, "GGGGG")
         self.assertEquals(seq.locus, "foo")
+        self.assertTrue(seq.has_both_primers)
+        self.assertFalse(seq.reverse)
 
     def test_sort_seq_positive_no_match(self):
         oligos = {"primer" : {"foo":PrimerPair("GATACA", "GATACA"), "dog":PrimerPair("ATGC", "ATGC")}}
