@@ -35,21 +35,17 @@ def write_top_n_counts(sorted_reads, num_counts, outfile):
 def write_most_abundant_fasta(sorted_reads, outfile):
     """Writes fasta file of most abundant reads at each locus
     """
-    print("Writing consensus")
     for read in sorted_reads.reads_by_locus_sample():
-        print("enter")
         locus = read[0]
         sample = read[1]
         seqs_counts = read[2]
         # seqs_counts is a list of (seq, [qual], count) tuples
-        print(seq_counts)
-        if len(seq_counts) == 0:
+        if len(seqs_counts) == 0:
             continue
-        print("yayaya")
         # Sort by count and take last (largest count) seq
-        consensus = sorted(seq_counts, key=lambda x: x[2])[-1]
+        consensus = sorted(seqs_counts, key=lambda x: x[2])[-1]
         # Write fasta
-        outfile.write(">"+locus + " " + sample + " count:"+consensus[2]+"\n"+consensus[0]+"\n")
+        outfile.write(">"+locus + " " + sample + " count:"+str(consensus[2])+"\n"+consensus[0]+"\n")
 
 
 def write_summary(counts_dict, io_buffer=sys.stdout):
