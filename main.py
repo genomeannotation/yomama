@@ -5,7 +5,7 @@ from src.fastq import read_fastq
 from src.sequence import sliding_window_filter
 from src.oligos import read_oligos, deoligo_seqs
 from src.consensus import call_consensus_for_yohan # ;-)
-from src.reports import write_top_n_counts, write_read_counts
+from src.reports import write_top_n_counts, write_most_abundant_fasta, write_read_counts
 
 def main(args):
     if len(args) == 1:
@@ -58,6 +58,8 @@ def main(args):
 
         # Generate a reports
         print("Generating reports...")
+        with open("consensus.fasta", "w") as consensus:
+            write_most_abundant_fasta(sorted_reads, consensus)
         with open("top_3_counts.tsv", "w") as report:
             write_top_n_counts(sorted_reads, 3, report)
         with open("reads_matrix.tsv", "w") as matrix:
